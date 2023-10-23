@@ -68,8 +68,11 @@ def display_processing_times():
 
     console.print(table)
 
-def save_processing_times_to_csv():
-    with open('/code/output/processing_times.csv', 'w', newline='') as csvfile:
+def save_processing_times_to_csv(output_path):
+    # with open('/data/output/processing_times.csv', 'w', newline='') as csvfile:
+    #     csv_writer = csv.writer(csvfile)
+    output_file = os.path.join(output_path, 'processing_times.csv')
+    with open(output_file, 'w', newline='') as csvfile:
         csv_writer = csv.writer(csvfile)
         
         # Find the max length of the data lists
@@ -221,7 +224,7 @@ def orthophoto_process_image(args, image_path, is_early=False):
 def main():
     parser = argparse.ArgumentParser(description="Run Orthophoto_Maps")
     parser.add_argument("--input_project", help="path to the input project folder", 
-                        default="/source/OpenSfM/data/test_images/")
+                        default="/source/OpenSfM/data/02_210513_road_150m/")
     parser.add_argument("--metadata_in_image", help="images have metadata?", default=True)    
     parser.add_argument("--output_path", help="path to output folder", default="output/")
     parser.add_argument("--no_image_process", type=int, help="the number of images to process at once", 
@@ -277,6 +280,7 @@ def main():
             
             if copied_image_path:
                 orthophoto_process_image(args, copied_image_path, is_early=True)
+    return args
 
 if __name__ == '__main__':
     
@@ -287,9 +291,10 @@ if __name__ == '__main__':
     combined_start_message = start_icon + " " + start_message
     console.print(Panel(combined_start_message, border_style="yellow", padding=(1, 2)))
 
-    main()
+    args_from_main = main()
     
-    save_processing_times_to_csv()
+    save_processing_times_to_csv(args_from_main.output_path)
+
     display_processing_times()
     
     end_time = datetime.now()
